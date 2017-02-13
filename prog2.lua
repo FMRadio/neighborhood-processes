@@ -13,11 +13,12 @@ local viz = require "visual"
 local il = require "il"
 
 -- our lua routines
+local ranks = require "rankFilters"
 
 -- Weiss's Functions
 local histo = require "il.histo"
 local threshold = require "il.threshold"
-
+local minmax = require "il.minmax"
 -----------
 -- menus --
 -----------
@@ -50,8 +51,22 @@ imageMenu("Noise",
 -- neighborhood processes menu
 imageMenu("Neighborhood Processes",
   {
-    
+    {"Minimum Filter", ranks.minFilter,
+      {{name = "N", type = "number", displaytype = "slider", default = 3, min = 0, max = 255}}},
+    {"Maximum Filter", ranks.maxFilter,
+      {{name = "N", type = "number", displaytype = "slider", default = 3, min = 0, max = 255}}},
   })
+
+
+-- Weiss Processes for testing purposes
+imageMenu("Weiss's Processes",
+  {
+    {"Minimum", minmax.minimum},
+    {"Maximum", minmax.maximum},
+--    {"Median+", median.medianPlus},
+--    {"Median", utils.timed(median.median), {{name = "w", type = "number", displaytype = "spin", default = 3, min = 0, max = 65}}},
+  }
+)
 
 -- help menu
 imageMenu("Help",
