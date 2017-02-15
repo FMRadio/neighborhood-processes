@@ -19,6 +19,10 @@ local ranks = require "rankFilters"
 local histo = require "il.histo"
 local threshold = require "il.threshold"
 local minmax = require "il.minmax"
+local median = require "il.median"
+local smooth = require "il.smooth"
+local utils = require "il.utils"
+local edge = require "il.edge"
 -----------
 -- menus --
 -----------
@@ -55,6 +59,12 @@ imageMenu("Neighborhood Processes",
       {{name = "N", type = "number", displaytype = "slider", default = 3, min = 0, max = 255}}},
     {"Maximum Filter", ranks.maxFilter,
       {{name = "N", type = "number", displaytype = "slider", default = 3, min = 0, max = 255}}},
+    {"Range Filter", ranks.rangeFilter,
+      {{name = "N", type = "number", displaytype = "slider", default = 3, min = 0, max = 255}}},
+    {"Meidan Filter", ranks.medianFilter,
+      {{name = "N", type = "number", displaytype = "slider", default = 3, min = 0, max = 255}}},
+    {"Mean Filter", ranks.meanFilter,
+      {{name = "N", type = "number", displaytype = "slider", default = 3, min = 0, max = 255}}},
   })
 
 
@@ -63,8 +73,9 @@ imageMenu("Weiss's Processes",
   {
     {"Minimum", minmax.minimum},
     {"Maximum", minmax.maximum},
---    {"Median+", median.medianPlus},
---    {"Median", utils.timed(median.median), {{name = "w", type = "number", displaytype = "spin", default = 3, min = 0, max = 65}}},
+    {"Range", edge.range},
+    {"Median", utils.timed(median.median), {{name = "w", type = "number", displaytype = "spin", default = 3, min = 0, max = 65}}},
+    {"Mean", smooth.mean, {{name = "w", type = "number", displaytype = "spin", default = 3, min = 0, max = 65}}},
   }
 )
 
