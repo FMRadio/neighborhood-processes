@@ -3,9 +3,21 @@ local color = require "il.color"
 local function sort(intensities)
   sorted = {}
   for i = 1, #intensities do
-      -- sort intensities
+    if table.getn(sorted) == 0 then
+      table.insert(sorted, 1, intensities[i])
+    else
+      local j = 1
+      -- walk through sorted
+      while j <= table.getn(sorted) and i < sorted[j] do
+      -- see if i < sorted[j]
+        j = j+1
+      end
+      -- insert i into sorted at j-1
+      table.insert(sorted, j-1, intensities[i])
+
+    end
   end
-  
+  return sorted
 end
 
 local function minFilter( img, n )
@@ -75,6 +87,42 @@ local function maxFilter( img, n )
   
 end
 local function medianFilter( img, n )
+    if n < 3 then return img end
+  if n%2 == 0 then n = n + 1 end
+  
+  img = color.RGB2YIQ(img)
+  local cpy = img:clone()
+  local rows, cols = img.height, img.width
+  local offset = math.floor(n/2)
+  
+  for r = 0, rows - 1 do
+    for c = 0, cols - 1 do
+      -- set up table to store pixel intensities
+      local pixels = {}
+      for i = -1 * offset, offset do
+        for j = -1 * offset, offset do
+          local curRow = r + i
+          local curCol = c + j
+          -- make sure index is within row and column bounds
+          if ( curRow > -1 ) and (curCol > -1 ) 
+          and ( curRow < rows - 1 ) and (curCol < cols - 1 ) then
+            -- add each intensity to front of the array (table)
+            table.insert(pixels, 1, img:at(curRow, curCol).y)
+          end
+        end
+      end
+      pixels = sort(pixels)
+      local mid = math.floor((table.getn(pixels)/2)+0.5)
+      if mid == 0 then
+        mid = 1
+      end
+      
+      print(mid)
+      cpy:at(r,c).y = pixels[mid]
+    end
+  end
+  
+  return color.YIQ2RGB(cpy)
 end
 local function meanFilter( img, n )
   if n < 3 then return img end

@@ -38,8 +38,9 @@ imageMenu("Histogram Processes",
   {
     {"Display Histogram", il.showHistogram,
       {{name = "Color Mode", type = "string", default = "rgb"}}},
-    {"Contrast Stretch", il.stretch,
-       {{name = "color model", type = "string", default = "yiq"}}},
+     {"Contrast Stretch", histo.stretchSpecify, hotkey = "C-H",
+      {{name = "lp", type = "number", displaytype = "spin", default = 1, min = 0, max = 100},
+       {name = "rp", type = "number", displaytype = "spin", default = 99, min = 0, max = 100}}},
      {"Histogram Equalize", il.equalize,
       {{name = "color model", type = "string", default = "yiq"}}},
   })
