@@ -159,6 +159,7 @@ local function meanFilter( img, n )
   return color.YIQ2RGB(cpy)
   
 end
+
 local function rangeFilter( img, n )
   if n < 3 then return img end
   if n%2 == 0 then n = n + 1 end
@@ -200,11 +201,63 @@ local function rangeFilter( img, n )
   
 end
 
+-- this is a filter with all 1's right now.
+-- I messed something up trying to make it use other values
+-- Will revisit after OS test.
+local function smooth( img )
+  local nrows, ncols = img.height, img.width
+  
+  img = color.RGB2YIQ(img)
+  local res = img:clone()
+  
+  for r = 1, nrows - 2 do
+    for c = 1, ncols - 2 do
+      local sum = 0
+      
+      for i = -1, 1 do
+        for j = -1, 1 do
+          sum = sum + img:at(r + i, c + j).y
+        end
+      end
+      
+      res:at(r, c).y = sum / 9
+    end
+  end
+  
+  return color.YIQ2RGB(res)
+end
+
+-- same code as smooth right now...when I get smooth sharpen should be easier
+local function sharpen( img )
+  local nrows, ncols = img.height, img.width
+  
+  img = color.RGB2YIQ(img)
+  local res = img:clone()
+  
+  for r = 1, nrows - 2 do
+    for c = 1, ncols - 2 do
+      local sum = 0
+      
+      for i = -1, 1 do
+        for j = -1, 1 do
+          --sum = sum + img:at(r + i, c + j).y
+        end
+      end
+      
+      --res:at(r, c).y = sum / 9
+    end
+  end
+  
+  return color.YIQ2RGB(res)
+end
+
 return {
   minFilter = minFilter,
   maxFilter = maxFilter,
   rangeFilter = rangeFilter,
   medianFilter = medianFilter,
   meanFilter = meanFilter,
+  smooth = smooth,
+  sharpen = sharpen,
   }
 

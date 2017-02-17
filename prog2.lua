@@ -56,6 +56,8 @@ imageMenu("Noise",
 -- neighborhood processes menu
 imageMenu("Neighborhood Processes",
   {
+    {"3x3 Smoothing", ranks.smooth},
+    {"3x3 Sharpening", ranks.sharpen},
     {"Minimum Filter", ranks.minFilter,
       {{name = "N", type = "number", displaytype = "slider", default = 3, min = 0, max = 255}}},
     {"Maximum Filter", ranks.maxFilter,
