@@ -53,6 +53,7 @@ local function minFilter( img, n )
   return color.YIQ2RGB(cpy)
   
 end
+
 local function maxFilter( img, n )
   if n < 3 then return img end
   if n%2 == 0 then n = n + 1 end
@@ -86,6 +87,7 @@ local function maxFilter( img, n )
   return color.YIQ2RGB(cpy)
   
 end
+
 local function medianFilter( img, n )
     if n < 3 then return img end
   if n%2 == 0 then n = n + 1 end
@@ -124,6 +126,7 @@ local function medianFilter( img, n )
   
   return color.YIQ2RGB(cpy)
 end
+
 local function meanFilter( img, n )
   if n < 3 then return img end
   if n%2 == 0 then n = n + 1 end
@@ -198,38 +201,40 @@ local function rangeFilter( img, n )
   end
   
   return cpy
-  
 end
 
--- this is a filter with all 1's right now.
--- I messed something up trying to make it use other values
--- Will revisit after OS test.
-local function smooth( img )
+local function medianPlus( img )
   local nrows, ncols = img.height, img.width
+  local filter = {0, 1, 0, 1, 1, 1, 0, 1, 0}
   
   img = color.RGB2YIQ(img)
   local res = img:clone()
   
   for r = 1, nrows - 2 do
     for c = 1, ncols - 2 do
-      local sum = 0
+    local sum = 0
       
-      for i = -1, 1 do
-        for j = -1, 1 do
-          sum = sum + img:at(r + i, c + j).y
+      for i = 0, 2 do
+        for j = 0, 2 do
+          --index = (i * 3) + j
+          --multiplier = filter[index + 1]
+          --sum = sum + multiplier*img:at(r+(i-1), c+(j-1)).y
         end
       end
       
-      res:at(r, c).y = sum / 9
+      --if sum > 255 then sum = 255 end
+      --if sum < 0 then sum = 0 end
+        
+      --res:at(r, c).y = sum
     end
   end
   
   return color.YIQ2RGB(res)
 end
 
--- same code as smooth right now...when I get smooth sharpen should be easier
-local function sharpen( img )
+local function smooth( img )
   local nrows, ncols = img.height, img.width
+  local filter = {1, 2, 1, 2, 4, 2, 1, 2, 1}
   
   img = color.RGB2YIQ(img)
   local res = img:clone()
@@ -238,13 +243,49 @@ local function sharpen( img )
     for c = 1, ncols - 2 do
       local sum = 0
       
-      for i = -1, 1 do
-        for j = -1, 1 do
-          --sum = sum + img:at(r + i, c + j).y
+      for i = 0, 2 do
+        for j = 0, 2 do
+          index = (i * 3) + j
+          multiplier = filter[index + 1]
+          sum = sum + multiplier*img:at(r+(i-1), c+(j-1)).y
         end
       end
       
-      --res:at(r, c).y = sum / 9
+      sum = sum / 16
+      
+      if sum > 255 then sum = 255 end
+      if sum < 0 then sum = 0 end
+        
+      res:at(r, c).y = sum
+    end
+  end
+  
+  return color.YIQ2RGB(res)
+end
+
+local function sharpen( img )
+  local nrows, ncols = img.height, img.width
+  local filter = {0, -1, 0, -1, 5, -1, 0, -1, 0}
+  
+  img = color.RGB2YIQ(img)
+  local res = img:clone()
+  
+  for r = 1, nrows - 2 do
+    for c = 1, ncols - 2 do
+      local sum = 0
+      
+      for i = 0, 2 do
+        for j = 0, 2 do
+          index = (i * 3) + j
+          multiplier = filter[index + 1]
+          sum = sum + multiplier*img:at(r+(i-1), c+(j-1)).y
+        end
+      end
+      -- am i supposed to rescale differently...?
+      if sum > 255 then sum = 255 end
+      if sum < 0 then sum = 0 end
+        
+      res:at(r, c).y = sum
     end
   end
   
@@ -257,7 +298,7 @@ return {
   rangeFilter = rangeFilter,
   medianFilter = medianFilter,
   meanFilter = meanFilter,
+  medianPlus = medianPlus,
   smooth = smooth,
   sharpen = sharpen,
   }
-
