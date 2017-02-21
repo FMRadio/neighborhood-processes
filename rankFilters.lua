@@ -210,22 +210,26 @@ local function medianPlus( img )
   img = color.RGB2YIQ(img)
   local res = img:clone()
   
-  for r = 1, nrows - 2 do
-    for c = 1, ncols - 2 do
-    local sum = 0
+  for r = 0, nrows - 1 do
+    for c = 0, ncols - 1 do
+      local pixels = {}
+      local sum = 0
       
       for i = 0, 2 do
         for j = 0, 2 do
-          --index = (i * 3) + j
-          --multiplier = filter[index + 1]
-          --sum = sum + multiplier*img:at(r+(i-1), c+(j-1)).y
+          if filter[(i*3) + j + 1] == 1 then
+            --table.insert(pixels, 1, img:at(r+i, c+j).y)
+          end
         end
       end
       
-      --if sum > 255 then sum = 255 end
-      --if sum < 0 then sum = 0 end
+      --pixels = sort(pixels)
+      --local mid = math.floor((table.getn(pixels)/2)+0.5)
+      --if mid == 0 then
+        --mid = 1
+      --end
         
-      --res:at(r, c).y = sum
+      --res:at(r, c).y = pixels[mid]
     end
   end
   

@@ -64,7 +64,7 @@ imageMenu("Neighborhood Processes",
       {{name = "N", type = "number", displaytype = "slider", default = 3, min = 0, max = 255}}},
     {"Range Filter", ranks.rangeFilter,
       {{name = "N", type = "number", displaytype = "slider", default = 3, min = 0, max = 255}}},
-    {"Median Plus Filter", ranks.medianPlus}
+    {"Median Plus Filter", ranks.medianPlus},
     {"Median Filter", ranks.medianFilter,
       {{name = "N", type = "number", displaytype = "slider", default = 3, min = 0, max = 255}}},
     {"Mean Filter", ranks.meanFilter,
