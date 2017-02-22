@@ -2,19 +2,27 @@ local color = require "il.color"
 
 local function sort(intensities)
   sorted = {}
-  for i = 1, #intensities do
+  for i = 1, table.getn(intensities) do
     if table.getn(sorted) == 0 then
       table.insert(sorted, 1, intensities[i])
     else
       local j = 1
       -- walk through sorted
-      while j <= table.getn(sorted) and i < sorted[j] do
-      -- see if i < sorted[j]
+      local count = table.getn(sorted)
+      local insertI = intensities[i]
+      local compI = sorted[j]
+      
+      while (j <= count) and ((compI == insertI) or (compI > insertI)) do
+      -- move j forwared until we find the end of sorted or an element larger than intensity
         j = j+1
+        compI = sorted[j]
       end
-      -- insert i into sorted at j-1
-      table.insert(sorted, j-1, intensities[i])
-
+      --if j < count then
+        --  j = j+1
+        --end
+        
+      -- insert intensity into the position of the larger intensity
+      table.insert(sorted, j, insertI)
     end
   end
   return sorted
