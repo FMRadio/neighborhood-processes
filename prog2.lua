@@ -72,7 +72,11 @@ imageMenu("Neighborhood Processes",
       {{name = "N", type = "number", displaytype = "spin", default = 3, min = 0, max = 255}}},
     {"Sobel Magnitude", sobel.magnitude},
   })
-
+-- edge detection processes menu
+imageMenu("Edge Detection",
+  {
+    {"Sobel Magnitude", sobel.magnitude},
+  })
 
 -- Weiss Processes for testing purposes
 imageMenu("Weiss's Processes",
@@ -83,7 +87,7 @@ imageMenu("Weiss's Processes",
     {"Median+", median.medianPlus},
     {"Median", utils.timed(median.median), {{name = "w", type = "number", displaytype = "spin", default = 3, min = 0, max = 65}}},
     {"Mean", smooth.mean, {{name = "w", type = "number", displaytype = "spin", default = 3, min = 0, max = 65}}},
-        {"Sobel Edge Mag", edge.sobelMag},
+    {"Sobel Edge Mag", edge.sobelMag},
   }
 )
 
