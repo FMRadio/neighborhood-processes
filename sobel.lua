@@ -1,4 +1,5 @@
 local color = require "il.color"
+local il = require "il"
 
 local function sobelX(img, rows, cols, r, c)
   local x = 0
@@ -7,41 +8,44 @@ local function sobelX(img, rows, cols, r, c)
   if r > 0  and r < rows-1 then
     -- use all rows
     if c > 0 and c < cols-1 then
-      -- use all cols
-      x = (-1 * img:at(r-1,c-1).y) + (1 * img:at(r+1,c-1).y)
-      x = x + (-2 * img:at(r-1,c).y) + (2 * img:at(r+1,c).y)
-      x = x + (-1 * img:at(r-1,c+1).y) + (1 * img:at(r+1,c+1).y)
+      -- use cols c-1 & c+1
+      x = (-1 * img:at(r-1,c-1).y) + (1 * img:at(r-1,c+1).y)
+      x = x + (-2 * img:at(r,c-1).y) + (2 * img:at(r,c+1).y)
+      x = x + (-1 * img:at(r+1,c-1).y) + (1 * img:at(r+1,c+1).y)
+      
     elseif c == 0 then
-      -- use col c & c+1
-      x = (-2 * img:at(r-1,c).y) + (2 * img:at(r+1,c).y) + (-1 * img:at(r-1,c+1).y)+ (1 * img:at(r+1,c+1).y)
+      -- use col c+1
+      x = (1 * img:at(r-1,c+1).y) + (2 * img:at(r,c+1).y) + (1 * img:at(r+1,c+1).y)
     elseif c == cols-1 then
-      -- use col c-1 & c
-      x = (-1 * img:at(r-1,c-1).y) + (1 * img:at(r+1,c-1).y) + (-2 * img:at(r-1,c).y) + (2 * img:at(r+1,c).y)
+      -- use col c-1
+      x = (-1 * img:at(r-1,c-1).y) + (-2 * img:at(r,c-1).y) + (-1 * img:at(r+1,c-1).y)
     end
 
   elseif r == 0 then
-    -- use rows r+1 & r
+    -- use rows r & r+1
     if c > 0 and c < cols-1 then
-      -- use all cols
-      x = (1 * img:at(r+1,c-1).y) + (2 * img:at(r+1,c).y) + (1 * img:at(r+1,c+1).y)
+      -- use cols c-1 & c+1
+      x = (-2 * img:at(r,c-1).y) + (2 * img:at(r,c+1).y)
+      x = x + (-1 * img:at(r+1,c-1).y) + (1 * img:at(r+1,c+1).y)
     elseif c == 0 then
-      -- use col c & c+1      
-      x = (2 * img:at(r+1,c).y) + (1 * img:at(r+1,c+1).y)
+      -- use col c+1      
+      x = (2 * img:at(r,c+1).y) + (1 * img:at(r+1,c+1).y)
     elseif c == cols-1 then
-      -- use cols c-1 & c
-      x =  (1 * img:at(r+1,c-1).y) + (2 * img:at(r+1,c).y)
+      -- use cols c-1
+      x = (-2 * img:at(r,c-1).y) + (-1 * img:at(r+1,c-1).y)
     end
   elseif r == rows-1 then
     -- use in rows r & r-1
     if c > 0 and c < cols-1 then
-      -- use all cols
-      x = x + (-1 * img:at(r-1,c-1).y) + (-2 * img:at(r-1,c).y) + (-1 * img:at(r-1,c+1).y)
+      -- use cols c-1 & c+1
+      x = (-1 * img:at(r-1,c-1).y) + (1 * img:at(r-1,c+1).y)
+      x = x + (-2 * img:at(r,c-1).y) + (2 * img:at(r,c+1).y)
     elseif c == 0 then
-      -- use col c & c+1
-      x = (-2 * img:at(r-1,c).y) + (-1 * img:at(r-1,c+1).y)
+      -- use col c+1
+      x = (1 * img:at(r-1,c+1).y) + (2 * img:at(r,c+1).y)
     elseif c == cols-1 then
-      -- use col c-1 & c
-      x = (-1 * img:at(r-1,c-1).y) + (-2 * img:at(r-1,c).y)  
+      -- use col c-1
+      x = (-1 * img:at(r-1,c-1).y) + (-2 * img:at(r,c-1).y)
     end      
   end
   
@@ -50,53 +54,56 @@ end
 
 local function sobelY(img, rows, cols, r, c)
   local y = 0
+  
   if r > 0  and r < rows-1 then
-    -- use all rows
+    -- use all rows r-1 & r+1
     if c > 0 and c < cols-1 then
       -- use all cols
-      y = (-1 * img:at(r-1,c-1).y) + (-2 * img:at(r,c-1).y) + (-1 * img:at(r+1,c-1).y)
-      y = y + (1 * img:at(r-1,c+1).y) + (2 * img:at(r,c+1).y) + (1 * img:at(r+1,c+1).y)
+      y = (1 * img:at(r-1,c-1).y)  + (2 * img:at(r-1,c).y)  + (1 * img:at(r-1,c+1).y)
+      y = y + (-1 * img:at(r+1,c-1).y) + (-2 * img:at(r+1,c).y) + (-1 * img:at(r+1,c+1).y)
     elseif c == 0 then
       -- use cols c & c+1
-      y = (1 * img:at(r-1,c+1).y) + (2 * img:at(r,c+1).y) + (1 * img:at(r+1,c+1).y)
+      y = (2 * img:at(r-1,c).y)  + (1 * img:at(r-1,c+1).y)
+      y = y + (-2 * img:at(r+1,c).y) + (-1 * img:at(r+1,c+1).y)
     elseif c == cols-1 then
       -- use cols c-1 & c
-      y = (-1 * img:at(r-1,c-1).y) + (-2 * img:at(r,c-1).y) + (-1 * img:at(r+1,c-1).y)
+      y = (1 * img:at(r-1,c-1).y)  + (2 * img:at(r-1,c).y)
+      y = y + (-1 * img:at(r+1,c-1).y) + (-2 * img:at(r+1,c).y)
     end
   elseif r == 0 then
     -- use row r+1
     if c > 0 and c < cols-1 then
-      y = y + (-2 * img:at(r,c-1).y) + (-1 * img:at(r+1,c-1).y)
-      y = y + (2 * img:at(r,c+1).y) + (1 * img:at(r+1,c+1).y)
       -- use all cols
+      y = (-1 * img:at(r+1,c-1).y) + (-2 * img:at(r+1,c).y) + (-1 * img:at(r+1,c+1).y)
     elseif c == 0 then
       -- use cols c & c+1
-      y = y + (2 * img:at(r,c+1).y) + (1 * img:at(r+1,c+1).y)
+      y = (-2 * img:at(r+1,c).y) + (-1 * img:at(r+1,c+1).y)
     elseif c == cols-1 then
-      -- use cols c-1 & c 
-      y = y + (-2 * img:at(r,c-1).y) + (-1 * img:at(r+1,c-1).y)
+      -- use cols c-1 & c
+      y = (-1 * img:at(r+1,c-1).y) + (-2 * img:at(r+1,c).y)
     end
   elseif r == rows-1 then
     -- use row r-1
     if c > 0 and c < cols-1 then
-      -- use all cols
-      y = (-1 * img:at(r-1,c-1).y) + (-2 * img:at(r,c-1).y) + (1 * img:at(r-1,c+1).y) + (2 * img:at(r,c+1).y)
+      -- use cols c-1 & c+1
+      y = (1 * img:at(r-1,c-1).y) + (2 * img:at(r-1,c).y)  + (1 * img:at(r-1,c+1).y)
     elseif c == 0 then
       -- use cols c & c+1
-      y = (1 * img:at(r-1,c+1).y) + (2 * img:at(r,c+1).y)
+      y = (2 * img:at(r-1,c).y) + (1 * img:at(r-1,c+1).y)
     elseif c == cols-1 then
       -- use cols c-1 & c
-      y = (-1 * img:at(r-1,c-1).y) + (-2 * img:at(r,c-1).y)
+      y = (1 * img:at(r-1,c-1).y) + (2 * img:at(r-1,c).y)
     end
 
   end
 
+  
   return y
 end
 
 local function magnitude( img )
-  img = color.RGB2YIQ( img )
   local cpy = img:clone()
+  img = color.RGB2YIQ( img )
   local rows, cols = img.height, img.width
   for r = 0, rows - 1 do
     for c = 0, cols - 1 do
@@ -108,18 +115,40 @@ local function magnitude( img )
       elseif val < 0 then
         val = 0
       end
-      
-      cpy:at(r,c).y = val
+      cpy:at(r,c).r = val
+      cpy:at(r,c).g = val
+      cpy:at(r,c).b = val
     end
   end
 
-  return color.YIQ2RGB(cpy)
-
+  return cpy
 end
 
 
-local function direction (img, n)
+local function direction( img )
+  local cpy = img:clone()
+  img = color.RGB2YIQ( img )
+  local rows, cols = img.height, img.width
+  for r = 0, rows - 1 do
+    for c = 0, cols - 1 do
+      local x = sobelX(img, rows, cols, r, c)
+      local y = sobelY(img, rows, cols, r, c)
+
+      local dir = math.atan2(y,x)
+      if dir < 0 then
+        dir = dir + (2*math.pi)
+      end
+      dir = dir * (255/(2*math.pi))
+      cpy:at(r,c).r = dir
+      cpy:at(r,c).g = dir
+      cpy:at(r,c).b = dir
+    end
+  end
+
+  return cpy
 end
+
+
 
 return {
   magnitude = magnitude,
