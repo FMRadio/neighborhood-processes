@@ -51,6 +51,53 @@ local function sobelX(img, rows, cols, r, c)
   return x
 end
 
+local function sobelY(img, rows, cols, r, c)
+  local y = 0
+  if r > 0  and r < rows-1 then
+    -- use rows r-1 & r+1 (ignore row r, they're all 0)
+    if c > 0 and c < cols-1 then
+      -- use all cols
+      y = (img:at(r - 1, c - 1).y * -1) + (img:at(r-1, c).y * -2) + (img:at(r-1, c + 1).y * -1)
+      y = y + (img:at(r + 1, c - 1).y * 1) + (img:at(r + 1, c).y * 2) + (img:at(r + 1, c + 1).y * 1)
+    elseif c == 0 then
+      -- use cols c & c+1
+      y = (img:at(r-1, c).y * -2) + (img:at(r-1, c + 1).y * -1)
+      y = y + (img:at(r + 1, c).y * 2) + (img:at(r + 1, c + 1).y * 1)
+    elseif c == cols-1 then
+      -- use cols c-1 & c
+      y = (img:at(r - 1, c - 1).y * -1) + (img:at(r-1, c).y * -2)
+      y = y + (img:at(r + 1, c - 1).y * 1) + (img:at(r + 1, c).y * 2)
+    end
+
+  elseif r == 0 then
+    -- use row r+1
+    if c > 0 and c < cols-1 then
+      -- use all cols
+      y = (img:at(r + 1, c - 1).y * 1) + (img:at(r + 1, c).y * 2) + (img:at(r + 1, c + 1).y * 1)
+    elseif c == 0 then
+      -- use cols c & c+1
+      y = (img:at(r + 1, c).y * 2) + (img:at(r + 1, c + 1).y * 1)
+    elseif c == cols-1 then
+      -- use cols c-1 & c 
+      y = (img:at(r + 1, c - 1).y * 1) + (img:at(r + 1, c).y * 2)
+    end
+  elseif r == rows-1 then
+    -- use row r-1
+    if c > 0 and c < cols-1 then
+      -- use all cols
+      y = (img:at(r - 1, c - 1).y * -1) + (img:at(r-1, c).y * -2) + (img:at(r-1, c + 1).y * -1)
+    elseif c == 0 then
+      -- use cols c & c+1
+      y = (img:at(r-1, c).y * -2) + (img:at(r-1, c + 1).y * -1)
+    elseif c == cols-1 then
+      -- use cols c-1 & c
+      y = (img:at(r - 1, c - 1).y * -1) + (img:at(r-1, c).y * -2)
+    end
+
+  end
+  return y
+end
+
 local function magnitude( img )
   img = color.RGB2YIQ( img )
   local cpy = img:clone()
@@ -58,7 +105,8 @@ local function magnitude( img )
   for r = 0, rows - 1 do
     for c = 0, cols - 1 do
       local x = sobelX(img, rows, cols, r, c)
-      cpy:at(r,c).y = x
+      local y = sobelY(img, rows, cols, r, c)
+      cpy:at(r,c).y = y
     end
   end
 
