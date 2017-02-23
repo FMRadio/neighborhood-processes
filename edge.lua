@@ -316,6 +316,7 @@ local function magnitudeKirsch( img )
 
         if mag > maxMag then maxMag = mag end
       end
+      maxMag = maxMag/3
 
       if maxMag > 255 then maxMag = 255
       elseif maxMag < 0 then maxMag = 0 end
