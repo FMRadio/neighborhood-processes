@@ -1,6 +1,20 @@
 local color = require "il.color"
-local il = require "il"
 
+--[[
+  Function Name: sobelX
+  
+  Description:  sobelX calculates the rate of change of
+                a neighborhood of pixels in the X direction
+  
+  Params:  img - the image being evaluated
+          rows - the number of rows of pixels in the image
+          cols - the number of columns of pixels in the image
+             r - the current row of the target pixel
+             c - the current column of the target pixel
+  
+  Returns:  the change in intensities in the X direction for the
+            neighborhood of the target pixel (r,c)
+--]]
 local function sobelX(img, rows, cols, r, c)
   local x = 0
 
@@ -52,6 +66,23 @@ local function sobelX(img, rows, cols, r, c)
   return x
 end
 
+--[[
+  Function Name: sobelY
+  
+  Author: Katie MacMillan
+  
+  Description:  sobelY calculates the rate of change of
+                a neighborhood of pixels in the Y direction
+  
+  Params:  img - the image being evaluated
+          rows - the number of rows of pixels in the image
+          cols - the number of columns of pixels in the image
+             r - the current row of the target pixel
+             c - the current column of the target pixel
+  
+  Returns:  the change in intensities in the Y direction for the
+            neighborhood of the target pixel (r,c)
+--]]
 local function sobelY(img, rows, cols, r, c)
   local y = 0
   
@@ -101,6 +132,21 @@ local function sobelY(img, rows, cols, r, c)
   return y
 end
 
+--[[
+  Function Name: magnitude
+  
+  Author: Katie MacMillan
+  
+  Description: magnitude calculates the magnitude
+          of change of pixel intensities, using
+          the Sobel filters, and sets the
+          magnitude of change around each pixel
+          as the value for that pixel  
+  
+  Params: img - the image to be processed
+  
+  Returns: the new magnitude based image
+--]]
 local function magnitude( img )
   local cpy = img:clone()
   img = color.RGB2YIQ( img )
@@ -125,6 +171,22 @@ local function magnitude( img )
 end
 
 
+--[[
+  Function Name: direction
+  
+  Author: Katie MacMillan
+  
+  Description: direction calculates the theta angle of the
+          direction of the change in pixel intensities for a
+          target pixel, using the Sobel filters. It then scales
+          the theta value to map from 0 to 255 and uses this
+          value as the intensity value for all color chanels
+          in the target pixel
+  
+  Params: img - the image to be processed
+  
+  Returns: the new directional based image
+--]]
 local function direction( img )
   local cpy = img:clone()
   img = color.RGB2YIQ( img )
