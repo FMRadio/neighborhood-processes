@@ -24,6 +24,8 @@ local median = require "il.median"
 local smooth = require "il.smooth"
 local utils = require "il.utils"
 local edge = require "il.edge"
+local stat = require "il.stat"
+
 -----------
 -- menus --
 -----------
@@ -63,11 +65,13 @@ imageMenu("Neighborhood Processes",
       {{name = "N", type = "number", displaytype = "spin", default = 3, min = 0, max = 255}}},
     {"Maximum Filter", ranks.maxFilter,
       {{name = "N", type = "number", displaytype = "spin", default = 3, min = 0, max = 255}}},
+    {"Median Filter", ranks.medianFilter,
+      {{name = "N", type = "number", displaytype = "spin", default = 3, min = 0, max = 255}}},
+    {"Standard Deviation Filter", ranks.deviationFilter,
+      {{name = "N", type = "number", displaytype = "spin", default = 3, min = 0, max = 255}}},
     {"Range Filter", ranks.rangeFilter,
       {{name = "N", type = "number", displaytype = "spin", default = 3, min = 0, max = 255}}},
     {"Median Plus Filter", ranks.medianPlus},
-    {"Median Filter", ranks.medianFilter,
-      {{name = "N", type = "number", displaytype = "spin", default = 3, min = 0, max = 255}}},
     {"Mean Filter", ranks.meanFilter,
       {{name = "N", type = "number", displaytype = "spin", default = 3, min = 0, max = 255}}},
   })
@@ -86,9 +90,10 @@ imageMenu("Weiss's Processes",
     {"Range", edge.range},
     {"Median+", median.medianPlus},
     {"Median", utils.timed(median.median), {{name = "w", type = "number", displaytype = "spin", default = 3, min = 0, max = 65}}},
-    {"Mean", smooth.mean, {{name = "w", type = "number", displaytype = "spin", default = 3, min = 0, max = 65}}},
     {"Sobel Edge Mag", edge.sobelMag},
     {"Sobel Edge Dir", il.sobel},
+      {"Mean", smooth.mean, {{name = "w", type = "number", displaytype = "spin", default = 3, min = 0, max = 65}}},
+    {"Std Dev", stat.stdDev, {{name = "w", type = "number", displaytype = "spin", default = 3, min = 0, max = 65}}},
   }
 )
 
