@@ -87,6 +87,7 @@ imageMenu("Edge detection",
   {
     {"Sobel Edge Mag", edge.magnitudeSobel},
     {"Sobel Edge Dir", edge.directionSobel},
+    {"Kirsch Edge Mag", edge.magnitudeKirsch},
     --{"Morph Gradient", edge.morphGradient},
     {"Range", edge.rangeFilter,
     {{name = "N", type = "number", displaytype = "spin", default = 3, min = 0, max = 65}}},

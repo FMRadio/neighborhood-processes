@@ -1,13 +1,15 @@
 local color = require "il.color"
 --[[
-  Function Name: 
+  Function Name: sort
   
-  Author: 
+  Author: Katie MacMillan
   
-  Description: 
-  Params: 
+  Description:  sort takes in a list of intensity
+                values and sorts them in decending
+                order
+  Params: intensities - a list of intensity values
   
-  Returns: 
+  Returns: a sorted list of the original intensity values
 --]]
 local function sort(intensities)
   sorted = {}

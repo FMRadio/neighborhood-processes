@@ -26,7 +26,7 @@ local function sobelX(img, rows, cols, r, c)
       x = (-1 * img:at(r-1,c-1).y) + (1 * img:at(r-1,c+1).y)
       x = x + (-2 * img:at(r,c-1).y) + (2 * img:at(r,c+1).y)
       x = x + (-1 * img:at(r+1,c-1).y) + (1 * img:at(r+1,c+1).y)
-      
+
     elseif c == 0 then
       -- use col c+1
       x = (1 * img:at(r-1,c+1).y) + (2 * img:at(r,c+1).y) + (1 * img:at(r+1,c+1).y)
@@ -62,7 +62,7 @@ local function sobelX(img, rows, cols, r, c)
       x = (-1 * img:at(r-1,c-1).y) + (-2 * img:at(r,c-1).y)
     end      
   end
-  
+
   return x
 end
 
@@ -85,7 +85,7 @@ end
 --]]
 local function sobelY(img, rows, cols, r, c)
   local y = 0
-  
+
   if r > 0  and r < rows-1 then
     -- use all rows r-1 & r+1
     if c > 0 and c < cols-1 then
@@ -128,7 +128,7 @@ local function sobelY(img, rows, cols, r, c)
 
   end
 
-  
+
   return y
 end
 
@@ -210,6 +210,128 @@ local function directionSobel( img )
   return cpy
 end
 
+
+
+
+local function rotateKirsch (filter)  
+  return {{filter[1][2], filter[1][3], filter[2][3]},
+    {filter[1][1], filter[2][2], filter[3][3]},
+    {filter[2][1], filter[3][1], filter[3][2]}}
+end
+
+local function getNeighborhood (img, r, c )
+  local rows, cols = img.height, img.width
+  -- check for neighborhood row bounds
+  if r > 0  and r < rows-1 then
+    -- use all rows
+    if c > 0 and c < cols-1 then
+      -- use all cols
+      return {{img:at(r-1,c-1).y, img:at(r-1,c).y, img:at(r-1,c+1).y},
+        {img:at(r,c-1).y, img:at(r,c).y, img:at(r,c+1).y},
+        {img:at(r+1,c-1).y, img:at(r+1,c).y, img:at(r+1,c+1).y}}
+
+    elseif c == 0 then
+      -- no col c-1
+      return {{0, img:at(r-1,c).y, img:at(r-1,c+1).y},
+        {0, img:at(r,c).y, img:at(r,c+1).y},
+        {0, img:at(r+1,c).y, img:at(r+1,c+1).y}}
+    else
+      -- no col c+1
+      return {{img:at(r-1,c-1).y, img:at(r-1,c).y, 0},
+        {img:at(r,c-1).y, img:at(r,c).y, 0},
+        {img:at(r+1,c-1).y, img:at(r+1,c).y, 0}}
+    end
+
+  elseif r == 0 then
+    -- no row r-1
+    if c > 0 and c < cols-1 then
+      -- use all cols
+      return {{0, 0, 0},
+        {img:at(r,c-1).y, img:at(r,c).y, img:at(r,c+1).y},
+        {img:at(r+1,c-1).y, img:at(r+1,c).y, img:at(r+1,c+1).y}}
+
+    elseif c == 0 then
+      -- no col c-1
+      return {{0, 0, 0},
+        {0, img:at(r,c).y, img:at(r,c+1).y},
+        {0, img:at(r+1,c).y, img:at(r+1,c+1).y}}
+    else
+      -- no col c+1
+      return {{0, 0, 0},
+        {img:at(r,c-1).y, img:at(r,c).y, 0},
+        {img:at(r+1,c-1).y, img:at(r+1,c).y, 0}}
+    end
+  else
+    -- no row r+1
+    if c > 0 and c < cols-1 then
+      -- use all cols
+      return {{img:at(r-1,c-1).y, img:at(r-1,c).y, img:at(r-1,c+1).y},
+        {img:at(r,c-1).y, img:at(r,c).y, img:at(r,c+1).y},
+        {0, 0, 0}}
+
+    elseif c == 0 then
+      -- no col c-1
+      return {{0, img:at(r-1,c).y, img:at(r-1,c+1).y},
+        {0, img:at(r,c).y, img:at(r,c+1).y},
+        {0, 0, 0}}
+    else
+      -- no col c+1
+      return {{img:at(r-1,c-1).y, img:at(r-1,c).y, 0},
+        {img:at(r,c-1).y, img:at(r,c).y, 0},
+        {0, 0, 0}}
+    end
+  end
+end
+
+local function kirsch (neighborhood, filter)
+--  filter = {(1,1), (1,2),(1,3),
+--    (2,1), (2,2), (2,3),
+--    (3,1), (3,2), (3,3)}
+
+--  local img = {(r-1,c-1),(r-1,c),(r-1,c+1),
+--    (r,c-1),(r,c),(r,c+1),
+--    (r+1,c-1),(r+1,c),(r+1,c+1),}
+  local mag = 0
+  for i = 1, 3 do
+    for j = 1, 3 do
+      mag = mag + (neighborhood[i][j] * filter[i][j])
+    end
+  end
+  return mag
+
+end
+
+local function magnitudeKirsch( img )
+  local cpy = img:clone()
+  img = color.RGB2YIQ( img )
+  local filter = {{-3, 5, 5},
+    {-3, 0, 5},
+    {-3, -3, -3}}
+  local rows, cols = img.height, img.width
+  for r = 0, rows - 1 do
+    for c = 0, cols - 1 do
+      local neighborhood = getNeighborhood(img, r, c)
+      local maxMag = 0
+      for i = 1, 8 do
+        filter = rotateKirsch(filter)
+
+        local mag = kirsch(neighborhood, filter)
+
+        if mag > maxMag then maxMag = mag end
+      end
+      print(maxMag)
+
+      if maxMag > 255 then maxMag = 255
+      elseif maxMag < 0 then maxMag = 0 end
+      cpy:at(r,c).r = maxMag
+      cpy:at(r,c).g = maxMag
+      cpy:at(r,c).b = maxMag
+
+    end
+  end
+
+  return cpy
+end
 
 
 --[[
@@ -338,6 +460,7 @@ end
 return {
   magnitudeSobel = magnitudeSobel,
   directionSobel = directionSobel,
+  magnitudeKirsch = magnitudeKirsch,
   deviationFilter = deviationFilter,
   rangeFilter = rangeFilter,
 }
