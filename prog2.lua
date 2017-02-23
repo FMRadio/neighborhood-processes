@@ -14,6 +14,7 @@ local il = require "il"
 
 -- our lua routines
 local ranks = require "rankFilters"
+local sobel = require "sobel"
 
 -- Weiss's Functions
 local histo = require "il.histo"
@@ -69,6 +70,7 @@ imageMenu("Neighborhood Processes",
       {{name = "N", type = "number", displaytype = "slider", default = 3, min = 0, max = 255}}},
     {"Mean Filter", ranks.meanFilter,
       {{name = "N", type = "number", displaytype = "slider", default = 3, min = 0, max = 255}}},
+    {"Sobel Magnitude", sobel.magnitude},
   })
 
 
