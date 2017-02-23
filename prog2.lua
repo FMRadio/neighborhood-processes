@@ -14,7 +14,8 @@ local il = require "il"
 
 -- our lua routines
 local ranks = require "rankFilters"
-local sobel = require "sobel"
+local edge = require "edge"
+local convolution = require "convolution"
 
 -- Weiss's Functions
 local histo = require "il.histo"
@@ -23,7 +24,7 @@ local minmax = require "il.minmax"
 local median = require "il.median"
 local smooth = require "il.smooth"
 local utils = require "il.utils"
-local edge = require "il.edge"
+local edge2 = require "il.edge"
 local stat = require "il.stat"
 
 -----------
@@ -57,42 +58,55 @@ imageMenu("Noise",
   })
 
 -- neighborhood processes menu
-imageMenu("Neighborhood Processes",
+imageMenu("Rank Order Filters",
   {
-    {"3x3 Smoothing", ranks.smooth},
-    {"3x3 Sharpening", ranks.sharpen},
     {"Minimum Filter", ranks.minFilter,
-      {{name = "N", type = "number", displaytype = "spin", default = 3, min = 0, max = 255}}},
+      {{name = "N", type = "number", displaytype = "spin", default = 3, min = 0, max = 65}}},
     {"Maximum Filter", ranks.maxFilter,
-      {{name = "N", type = "number", displaytype = "spin", default = 3, min = 0, max = 255}}},
+      {{name = "N", type = "number", displaytype = "spin", default = 3, min = 0, max = 65}}},
     {"Median Filter", ranks.medianFilter,
-      {{name = "N", type = "number", displaytype = "spin", default = 3, min = 0, max = 255}}},
-    {"Standard Deviation Filter", ranks.deviationFilter,
-      {{name = "N", type = "number", displaytype = "spin", default = 3, min = 0, max = 255}}},
-    {"Range Filter", ranks.rangeFilter,
-      {{name = "N", type = "number", displaytype = "spin", default = 3, min = 0, max = 255}}},
+      {{name = "N", type = "number", displaytype = "spin", default = 3, min = 0, max = 65}}},
     {"Median Plus Filter", ranks.medianPlus},
-    {"Mean Filter", ranks.meanFilter,
-      {{name = "N", type = "number", displaytype = "spin", default = 3, min = 0, max = 255}}},
   })
--- edge detection processes menu
-imageMenu("Edge Detection",
+
+-- convolution filter processes menu
+imageMenu("Convolution filters",
   {
-    {"Sobel Magnitude", sobel.magnitude},
-    {"Sobel Direction", sobel.direction},
-  })
+    {"3x3 Smooth", convolution.smooth},
+    {"3x3 Sharpen", convolution.sharpen},
+    {"Mean", convolution.meanFilter, 
+      {{name = "N", type = "number", displaytype = "spin", default = 3, min = 0, max = 255}}},
+    --{"Weighted Mean 1", smooth.meanW1, {{name = "w", type = "number", displaytype = "spin", default = 3, min = 0, max = 65}}},
+    --{"Weighted Mean 2", smooth.meanW2, {{name = "w", type = "number", displaytype = "spin", default = 3, min = 0, max = 65}}},
+    --{"Gaussian", smooth.meanW3, hotkey = "C-G", {{name = "sigma", type = "string", default = "2.0"}}},
+  }
+)
+
+-- edge detection processes menu
+imageMenu("Edge detection",
+  {
+    {"Sobel Edge Mag", edge.magnitudeSobel},
+    {"Sobel Edge Dir", edge.directionSobel},
+    --{"Morph Gradient", edge.morphGradient},
+    {"Range", edge.rangeFilter,
+    {{name = "N", type = "number", displaytype = "spin", default = 3, min = 0, max = 65}}},
+      --{"Variance", stat.variance, {{name = "w", type = "number", displaytype = "spin", default = 3, min = 0, max = 65}}},
+    {"Standard Deviation", edge.deviationFilter, 
+      {{name = "N", type = "number", displaytype = "spin", default = 3, min = 0, max = 65}}},
+  }
+)
 
 -- Weiss Processes for testing purposes
 imageMenu("Weiss's Processes",
   {
     {"Minimum", minmax.minimum},
     {"Maximum", minmax.maximum},
-    {"Range", edge.range},
+    {"Range", edge2.range},
     {"Median+", median.medianPlus},
     {"Median", utils.timed(median.median), {{name = "w", type = "number", displaytype = "spin", default = 3, min = 0, max = 65}}},
-    {"Sobel Edge Mag", edge.sobelMag},
+    {"Sobel Edge Mag", edge2.sobelMag},
     {"Sobel Edge Dir", il.sobel},
-      {"Mean", smooth.mean, {{name = "w", type = "number", displaytype = "spin", default = 3, min = 0, max = 65}}},
+    {"Mean", smooth.mean, {{name = "w", type = "number", displaytype = "spin", default = 3, min = 0, max = 65}}},
     {"Std Dev", stat.stdDev, {{name = "w", type = "number", displaytype = "spin", default = 3, min = 0, max = 65}}},
   }
 )
