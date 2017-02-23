@@ -284,30 +284,27 @@ local function getNeighborhood (img, r, c )
 end
 
 local function kirsch (neighborhood, filter)
---  filter = {(1,1), (1,2),(1,3),
---    (2,1), (2,2), (2,3),
---    (3,1), (3,2), (3,3)}
-
---  local img = {(r-1,c-1),(r-1,c),(r-1,c+1),
---    (r,c-1),(r,c),(r,c+1),
---    (r+1,c-1),(r+1,c),(r+1,c+1),}
   local mag = 0
+  
   for i = 1, 3 do
     for j = 1, 3 do
       mag = mag + (neighborhood[i][j] * filter[i][j])
     end
   end
+  
   return mag
 
 end
 
 local function magnitudeKirsch( img )
   local cpy = img:clone()
-  img = color.RGB2YIQ( img )
-  local filter = {{-3, 5, 5},
-    {-3, 0, 5},
-    {-3, -3, -3}}
   local rows, cols = img.height, img.width
+  local filter = {{-3,  5,  5},
+                  {-3,  0,  5},
+                  {-3, -3, -3}}
+  
+  img = color.RGB2YIQ( img )
+  
   for r = 0, rows - 1 do
     for c = 0, cols - 1 do
       local neighborhood = getNeighborhood(img, r, c)
@@ -319,7 +316,6 @@ local function magnitudeKirsch( img )
 
         if mag > maxMag then maxMag = mag end
       end
-      print(maxMag)
 
       if maxMag > 255 then maxMag = 255
       elseif maxMag < 0 then maxMag = 0 end
@@ -332,7 +328,42 @@ local function magnitudeKirsch( img )
 
   return cpy
 end
+local function directionKirsch( img )
+    local cpy = img:clone()
+  img = color.RGB2YIQ( img )
+  local filter = {{-3, 5, 5},
+    {-3, 0, 5},
+    {-3, -3, -3}}
+  local rows, cols = img.height, img.width
+  for r = 0, rows - 1 do
+    for c = 0, cols - 1 do
+      local neighborhood = getNeighborhood(img, r, c)
+      local maxMag = 0
+      local i = 0
+      local dir = 0
+      for i = 1, 8 do
+        filter = rotateKirsch(filter)
 
+        local mag = kirsch(neighborhood, filter)
+
+        if mag > maxMag then 
+          maxMag = mag
+          dir = i
+        end
+      end
+      dir = (dir * 45) - 22.5
+      local intensity = dir * (360/255)
+      if intensity > 255 then intensity = 255
+      elseif intensity < 0 then intensity = 0 end
+      cpy:at(r,c).r = intensity
+      cpy:at(r,c).g = intensity
+      cpy:at(r,c).b = intensity
+
+    end
+  end
+
+  return cpy
+end
 
 --[[
   Function Name: deviationFilter
@@ -461,6 +492,7 @@ return {
   magnitudeSobel = magnitudeSobel,
   directionSobel = directionSobel,
   magnitudeKirsch = magnitudeKirsch,
+  directionKirsch = directionKirsch,
   deviationFilter = deviationFilter,
   rangeFilter = rangeFilter,
 }
