@@ -330,11 +330,11 @@ local function magnitudeKirsch( img )
   return cpy
 end
 local function directionKirsch( img )
-    local cpy = img:clone()
+  local cpy = img:clone()
   img = color.RGB2YIQ( img )
-  local filter = {{-3, 5, 5},
-    {-3, 0, 5},
-    {-3, -3, -3}}
+  local filter = {{-3, -3, -3},
+                  {-3,  0,  5},
+                  {-3,  5,  5}}
   local rows, cols = img.height, img.width
   for r = 0, rows - 1 do
     for c = 0, cols - 1 do
@@ -353,7 +353,9 @@ local function directionKirsch( img )
         end
       end
       dir = (dir * 45) - 22.5
-      local intensity = dir * (360/255)
+--      print(dir)
+      local intensity = dir * (255/360)
+      print(intensity)
       if intensity > 255 then intensity = 255
       elseif intensity < 0 then intensity = 0 end
       cpy:at(r,c).r = intensity
