@@ -1,5 +1,70 @@
 local color = require "il.color"
 
+local function getNeighborhood (img, r, c )
+  local rows, cols = img.height, img.width
+  -- check for neighborhood row bounds
+  if r > 0  and r < rows-1 then
+    -- use all rows
+    if c > 0 and c < cols-1 then
+      -- use all cols
+      return {{img:at(r-1,c-1).y, img:at(r-1,c).y, img:at(r-1,c+1).y},
+              {img:at(r,c-1).y,   img:at(r,c).y,   img:at(r,c+1).y},
+              {img:at(r+1,c-1).y, img:at(r+1,c).y, img:at(r+1,c+1).y}}
+
+    elseif c == 0 then
+      -- no col c-1, reflect c+1
+      return {{img:at(r-1,c+1).y, img:at(r-1,c).y, img:at(r-1,c+1).y},
+              {img:at(r,c+1).y,   img:at(r,c).y,   img:at(r,c+1).y},
+              {img:at(r+1,c+1).y, img:at(r+1,c).y, img:at(r+1,c+1).y}}
+    else
+      -- no col c+1 reflect c-1
+      return {{img:at(r-1,c-1).y, img:at(r-1,c).y, img:at(r-1,c-1).y},
+              {img:at(r,c-1).y,   img:at(r,c).y,   img:at(r,c-1).y},
+              {img:at(r+1,c-1).y, img:at(r+1,c).y, img:at(r+1,c-1).y}}
+    end
+
+  elseif r == 0 then
+    -- no row r-1, reflect row r+1
+    if c > 0 and c < cols-1 then
+      -- use all cols
+      return {{img:at(r+1,c-1).y, img:at(r+1,c).y, img:at(r+1,c+1).y},
+              {img:at(r,c-1).y,   img:at(r,c).y,   img:at(r,c+1).y},
+              {img:at(r+1,c-1).y, img:at(r+1,c).y, img:at(r+1,c+1).y}}
+
+    elseif c == 0 then
+      -- no col c-1, reflect col c+1
+      return {{img:at(r+1,c+1).y, img:at(r+1,c).y, img:at(r+1,c+1).y},
+              {img:at(r,c+1).y,   img:at(r,c).y,   img:at(r,c+1).y},
+              {img:at(r+1,c+1).y, img:at(r+1,c).y, img:at(r+1,c+1).y}}
+    else
+      -- no col c+1, reflect col c-1
+      return {{img:at(r+1,c-1).y, img:at(r+1,c).y, img:at(r+1,c-1).y},
+              {img:at(r,c-1).y,   img:at(r,c).y,   img:at(r,c-1).y},
+              {img:at(r+1,c-1).y, img:at(r+1,c).y, img:at(r+1,c-1).y}}
+
+    end
+  else
+    -- no row r+1, reflect row r-1
+    if c > 0 and c < cols-1 then
+      -- use all cols
+      return {{img:at(r-1,c-1).y, img:at(r-1,c).y, img:at(r-1,c+1).y},
+              {img:at(r,c-1).y,   img:at(r,c).y,   img:at(r,c+1).y},
+              {img:at(r-1,c-1).y, img:at(r-1,c).y, img:at(r-1,c+1).y}}
+
+    elseif c == 0 then
+      -- no col c-1, reflect col c+1
+       return {{img:at(r-1,c+1).y, img:at(r-1,c).y, img:at(r-1,c+1).y},
+              {img:at(r,c+1).y,   img:at(r,c).y,   img:at(r,c+1).y},
+              {img:at(r-1,c+1).y, img:at(r-1,c).y, img:at(r-1,c+1).y}}
+   else
+      -- no col c+1, reflect col c-1
+      return {{img:at(r-1,c-1).y, img:at(r-1,c).y, img:at(r-1,c-1).y},
+              {img:at(r,c-1).y,   img:at(r,c).y,   img:at(r,c-1).y},
+              {img:at(r-1,c-1).y, img:at(r-1,c).y, img:at(r-1,c-1).y}}
+    end
+  end
+end
+
 --[[
   Function Name: sobelX
   
@@ -15,54 +80,17 @@ local color = require "il.color"
   Returns:  the change in intensities in the X direction for the
             neighborhood of the target pixel (r,c)
 --]]
-local function sobelX(img, rows, cols, r, c)
+local function sobelX(neighborhood)
   local x = 0
+  local filter = {{-1, 0, 1},
+                  {-2, 0, 2},
+                  {-1, 0, 1}}
 
-  -- check for neighborhood row bounds
-  if r > 0  and r < rows-1 then
-    -- use all rows
-    if c > 0 and c < cols-1 then
-      -- use cols c-1 & c+1
-      x = (-1 * img:at(r-1,c-1).y) + (1 * img:at(r-1,c+1).y)
-      x = x + (-2 * img:at(r,c-1).y) + (2 * img:at(r,c+1).y)
-      x = x + (-1 * img:at(r+1,c-1).y) + (1 * img:at(r+1,c+1).y)
-
-    elseif c == 0 then
-      -- use col c+1
-      x = (1 * img:at(r-1,c+1).y) + (2 * img:at(r,c+1).y) + (1 * img:at(r+1,c+1).y)
-    elseif c == cols-1 then
-      -- use col c-1
-      x = (-1 * img:at(r-1,c-1).y) + (-2 * img:at(r,c-1).y) + (-1 * img:at(r+1,c-1).y)
+    for i = 1, 3 do
+    for j = 1, 3 do
+      x = x + (neighborhood[i][j] * filter[i][j])
     end
-
-  elseif r == 0 then
-    -- use rows r & r+1
-    if c > 0 and c < cols-1 then
-      -- use cols c-1 & c+1
-      x = (-2 * img:at(r,c-1).y) + (2 * img:at(r,c+1).y)
-      x = x + (-1 * img:at(r+1,c-1).y) + (1 * img:at(r+1,c+1).y)
-    elseif c == 0 then
-      -- use col c+1      
-      x = (2 * img:at(r,c+1).y) + (1 * img:at(r+1,c+1).y)
-    elseif c == cols-1 then
-      -- use cols c-1
-      x = (-2 * img:at(r,c-1).y) + (-1 * img:at(r+1,c-1).y)
-    end
-  elseif r == rows-1 then
-    -- use in rows r & r-1
-    if c > 0 and c < cols-1 then
-      -- use cols c-1 & c+1
-      x = (-1 * img:at(r-1,c-1).y) + (1 * img:at(r-1,c+1).y)
-      x = x + (-2 * img:at(r,c-1).y) + (2 * img:at(r,c+1).y)
-    elseif c == 0 then
-      -- use col c+1
-      x = (1 * img:at(r-1,c+1).y) + (2 * img:at(r,c+1).y)
-    elseif c == cols-1 then
-      -- use col c-1
-      x = (-1 * img:at(r-1,c-1).y) + (-2 * img:at(r,c-1).y)
-    end      
   end
-
   return x
 end
 
@@ -83,52 +111,16 @@ end
   Returns:  the change in intensities in the Y direction for the
             neighborhood of the target pixel (r,c)
 --]]
-local function sobelY(img, rows, cols, r, c)
+local function sobelY(neighborhood)
   local y = 0
-
-  if r > 0  and r < rows-1 then
-    -- use all rows r-1 & r+1
-    if c > 0 and c < cols-1 then
-      -- use all cols
-      y = (1 * img:at(r-1,c-1).y)  + (2 * img:at(r-1,c).y)  + (1 * img:at(r-1,c+1).y)
-      y = y + (-1 * img:at(r+1,c-1).y) + (-2 * img:at(r+1,c).y) + (-1 * img:at(r+1,c+1).y)
-    elseif c == 0 then
-      -- use cols c & c+1
-      y = (2 * img:at(r-1,c).y)  + (1 * img:at(r-1,c+1).y)
-      y = y + (-2 * img:at(r+1,c).y) + (-1 * img:at(r+1,c+1).y)
-    elseif c == cols-1 then
-      -- use cols c-1 & c
-      y = (1 * img:at(r-1,c-1).y)  + (2 * img:at(r-1,c).y)
-      y = y + (-1 * img:at(r+1,c-1).y) + (-2 * img:at(r+1,c).y)
+  local filter = {{1,   2,  1},
+                  {0,   0,  0},
+                  {-1, -2, -1}}
+  for i = 1, 3 do
+    for j = 1, 3 do
+      y = y + (neighborhood[i][j] * filter[i][j])
     end
-  elseif r == 0 then
-    -- use row r+1
-    if c > 0 and c < cols-1 then
-      -- use all cols
-      y = (-1 * img:at(r+1,c-1).y) + (-2 * img:at(r+1,c).y) + (-1 * img:at(r+1,c+1).y)
-    elseif c == 0 then
-      -- use cols c & c+1
-      y = (-2 * img:at(r+1,c).y) + (-1 * img:at(r+1,c+1).y)
-    elseif c == cols-1 then
-      -- use cols c-1 & c
-      y = (-1 * img:at(r+1,c-1).y) + (-2 * img:at(r+1,c).y)
-    end
-  elseif r == rows-1 then
-    -- use row r-1
-    if c > 0 and c < cols-1 then
-      -- use cols c-1 & c+1
-      y = (1 * img:at(r-1,c-1).y) + (2 * img:at(r-1,c).y)  + (1 * img:at(r-1,c+1).y)
-    elseif c == 0 then
-      -- use cols c & c+1
-      y = (2 * img:at(r-1,c).y) + (1 * img:at(r-1,c+1).y)
-    elseif c == cols-1 then
-      -- use cols c-1 & c
-      y = (1 * img:at(r-1,c-1).y) + (2 * img:at(r-1,c).y)
-    end
-
   end
-
-
   return y
 end
 
@@ -153,14 +145,14 @@ local function magnitudeSobel( img )
   local rows, cols = img.height, img.width
   for r = 0, rows - 1 do
     for c = 0, cols - 1 do
-      local x = sobelX(img, rows, cols, r, c)
-      local y = sobelY(img, rows, cols, r, c)
+      local neighborhood = getNeighborhood(img, r, c)
+      local x = sobelX(neighborhood)
+      local y = sobelY(neighborhood)
       local val = math.ceil((math.sqrt(( x * x ) + ( y * y ))))
-      if val > 255 then
-        val = 255
-      elseif val < 0 then
-        val = 0
-      end
+      
+      if val > 255 then val = 255
+      elseif val < 0 then val = 0 end
+      
       cpy:at(r,c).r = val
       cpy:at(r,c).g = val
       cpy:at(r,c).b = val
@@ -193,14 +185,14 @@ local function directionSobel( img )
   local rows, cols = img.height, img.width
   for r = 0, rows - 1 do
     for c = 0, cols - 1 do
-      local x = sobelX(img, rows, cols, r, c)
-      local y = sobelY(img, rows, cols, r, c)
+      local neighborhood = getNeighborhood(img, r, c)
+      local x = sobelX(neighborhood)
+      local y = sobelY(neighborhood)
 
       local dir = math.atan2(y,x)
-      if dir < 0 then
-        dir = dir + (2*math.pi)
-      end
+      if dir < 0 then dir = dir + (2*math.pi) end
       dir = dir * (255/(2*math.pi))
+      
       cpy:at(r,c).r = dir
       cpy:at(r,c).g = dir
       cpy:at(r,c).b = dir
@@ -217,70 +209,6 @@ local function rotateKirsch (filter)
   return {{filter[1][2], filter[1][3], filter[2][3]},
     {filter[1][1], filter[2][2], filter[3][3]},
     {filter[2][1], filter[3][1], filter[3][2]}}
-end
-
-local function getNeighborhood (img, r, c )
-  local rows, cols = img.height, img.width
-  -- check for neighborhood row bounds
-  if r > 0  and r < rows-1 then
-    -- use all rows
-    if c > 0 and c < cols-1 then
-      -- use all cols
-      return {{img:at(r-1,c-1).y, img:at(r-1,c).y, img:at(r-1,c+1).y},
-        {img:at(r,c-1).y, img:at(r,c).y, img:at(r,c+1).y},
-        {img:at(r+1,c-1).y, img:at(r+1,c).y, img:at(r+1,c+1).y}}
-
-    elseif c == 0 then
-      -- no col c-1
-      return {{0, img:at(r-1,c).y, img:at(r-1,c+1).y},
-        {0, img:at(r,c).y, img:at(r,c+1).y},
-        {0, img:at(r+1,c).y, img:at(r+1,c+1).y}}
-    else
-      -- no col c+1
-      return {{img:at(r-1,c-1).y, img:at(r-1,c).y, 0},
-        {img:at(r,c-1).y, img:at(r,c).y, 0},
-        {img:at(r+1,c-1).y, img:at(r+1,c).y, 0}}
-    end
-
-  elseif r == 0 then
-    -- no row r-1
-    if c > 0 and c < cols-1 then
-      -- use all cols
-      return {{0, 0, 0},
-        {img:at(r,c-1).y, img:at(r,c).y, img:at(r,c+1).y},
-        {img:at(r+1,c-1).y, img:at(r+1,c).y, img:at(r+1,c+1).y}}
-
-    elseif c == 0 then
-      -- no col c-1
-      return {{0, 0, 0},
-        {0, img:at(r,c).y, img:at(r,c+1).y},
-        {0, img:at(r+1,c).y, img:at(r+1,c+1).y}}
-    else
-      -- no col c+1
-      return {{0, 0, 0},
-        {img:at(r,c-1).y, img:at(r,c).y, 0},
-        {img:at(r+1,c-1).y, img:at(r+1,c).y, 0}}
-    end
-  else
-    -- no row r+1
-    if c > 0 and c < cols-1 then
-      -- use all cols
-      return {{img:at(r-1,c-1).y, img:at(r-1,c).y, img:at(r-1,c+1).y},
-        {img:at(r,c-1).y, img:at(r,c).y, img:at(r,c+1).y},
-        {0, 0, 0}}
-
-    elseif c == 0 then
-      -- no col c-1
-      return {{0, img:at(r-1,c).y, img:at(r-1,c+1).y},
-        {0, img:at(r,c).y, img:at(r,c+1).y},
-        {0, 0, 0}}
-    else
-      -- no col c+1
-      return {{img:at(r-1,c-1).y, img:at(r-1,c).y, 0},
-        {img:at(r,c-1).y, img:at(r,c).y, 0},
-        {0, 0, 0}}
-    end
-  end
 end
 
 local function kirsch (neighborhood, filter)
@@ -340,24 +268,26 @@ local function directionKirsch( img )
     for c = 0, cols - 1 do
       local neighborhood = getNeighborhood(img, r, c)
       local maxMag = 0
-      local i = 0
       local dir = 0
+      
       for i = 1, 8 do
         filter = rotateKirsch(filter)
 
         local mag = kirsch(neighborhood, filter)
-
+          -- store which rotation contained the maximum reaction
         if mag > maxMag then 
           maxMag = mag
           dir = i
         end
       end
-      dir = (dir * 45) - 22.5
---      print(dir)
-      local intensity = dir * (255/360)
-      print(intensity)
+      
+      -- get angle of change (+/- 22.5 degrees) and scale to 255 intensities
+      local intensity = ((dir * 45) - 22.5) * (255/360)
+      
+      -- clip intensity
       if intensity > 255 then intensity = 255
       elseif intensity < 0 then intensity = 0 end
+      
       cpy:at(r,c).r = intensity
       cpy:at(r,c).g = intensity
       cpy:at(r,c).b = intensity
