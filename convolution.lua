@@ -133,8 +133,35 @@ local function sharpen( img )
   return color.YIQ2RGB(res)
 end
 
+local function emboss( img )
+  local nrows, ncols = img.height, img.width
+  local filter = {0, 0, 0, 0, 1, 0, 0, 0, -1}
+
+  img = color.RGB2YIQ(img)
+  local res = img:clone()
+
+  for r = 1, nrows - 2 do
+    for c = 1, ncols - 2 do
+      local sum = 0
+
+      for i = 0, 2 do
+        for j = 0, 2 do
+          index = (i * 3) + j + 1
+          multiplier = filter[index]
+          sum = sum + multiplier*img:at(r+(i-1), c+(j-1)).y
+        end
+      end
+      
+      res:at(r, c).y = sum
+    end
+  end
+
+  return color.YIQ2RGB(res)
+end
+
 return {
   meanFilter = meanFilter,
   smooth = smooth,
   sharpen = sharpen,
+  emboss = emboss,
 }

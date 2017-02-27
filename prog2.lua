@@ -76,6 +76,7 @@ imageMenu("Convolution filters",
     {"3x3 Sharpen", convolution.sharpen},
     {"Mean", convolution.meanFilter, 
       {{name = "N", type = "number", displaytype = "spin", default = 3, min = 0, max = 255}}},
+    {"Emboss", convolution.emboss},
     --{"Weighted Mean 1", smooth.meanW1, {{name = "w", type = "number", displaytype = "spin", default = 3, min = 0, max = 65}}},
     --{"Weighted Mean 2", smooth.meanW2, {{name = "w", type = "number", displaytype = "spin", default = 3, min = 0, max = 65}}},
     --{"Gaussian", smooth.meanW3, hotkey = "C-G", {{name = "sigma", type = "string", default = "2.0"}}},
@@ -112,6 +113,7 @@ imageMenu("Weiss's Processes",
 
     {"Mean", smooth.mean, {{name = "w", type = "number", displaytype = "spin", default = 3, min = 0, max = 65}}},
     {"Std Dev", stat.stdDev, {{name = "w", type = "number", displaytype = "spin", default = 3, min = 0, max = 65}}},
+    {"Emboss", il.emboss},
   }
 )
 
