@@ -257,6 +257,7 @@ local function magnitudeKirsch( img )
 
   return cpy
 end
+
 local function directionKirsch( img )
   local cpy = img:clone()
   img = color.RGB2YIQ( img )
