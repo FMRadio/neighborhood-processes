@@ -1,4 +1,5 @@
 local color = require "il.color"
+local edge = require "edge"
 --[[
   Function Name: meanFilter
   
@@ -135,7 +136,9 @@ end
 
 local function emboss( img )
   local nrows, ncols = img.height, img.width
-  local filter = {0, 0, 0, 0, 1, 0, 0, 0, -1}
+  local filter = {{0, 0, 0},
+                  {0, 1, 0},
+                  {0, 0, -1}}
 
   img = color.RGB2YIQ(img)
   local res = img:clone()
@@ -143,14 +146,16 @@ local function emboss( img )
   for r = 1, nrows - 2 do
     for c = 1, ncols - 2 do
       local sum = 0
-
-      for i = 0, 2 do
-        for j = 0, 2 do
-          index = (i * 3) + j + 1
-          multiplier = filter[index]
-          sum = sum + multiplier*img:at(r+(i-1), c+(j-1)).y
+      local neighborhood = edge.getNeighborhood(img, r, c)
+      for i = 1, 3 do
+        for j = 1, 3 do
+          sum = sum + (neighborhood[i][j] * filter[i][j])
         end
       end
+      sum = sum + 128
+      if sum < 0 then sum = 0
+      elseif sum > 255 then sum = 255 end
+      
       
       res:at(r, c).y = sum
     end
