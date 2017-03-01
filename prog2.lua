@@ -114,7 +114,9 @@ imageMenu("Weiss's Processes",
 
     {"Mean", smooth.mean, {{name = "w", type = "number", displaytype = "spin", default = 3, min = 0, max = 65}}},
     {"Std Dev", stat.stdDev, {{name = "w", type = "number", displaytype = "spin", default = 3, min = 0, max = 65}}},
-    {"Noise Clean", il.noiseClean, {{name = "threshold", type = "number", displaytype = "slider", default = 64, min = 0, max = 256    {"Emboss", il.emboss},
+    {"Noise Clean", il.noiseClean, 
+      {{name = "threshold", type = "number", displaytype = "slider", default = 64, min = 0, max = 256}}},    
+    {"Emboss", il.emboss},
   }
 )
 
