@@ -428,4 +428,5 @@ return {
   directionKirsch = directionKirsch,
   deviationFilter = deviationFilter,
   rangeFilter = rangeFilter,
+  getNeighborhood = getNeighborhood,
 }

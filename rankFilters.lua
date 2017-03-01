@@ -1,4 +1,6 @@
 local color = require "il.color"
+local edge = require "edge"
+
 --[[
   Function Name: sort
   
@@ -237,6 +239,54 @@ local function medianPlusFilter( img )
   return color.YIQ2RGB(res)
 end
 
+--[[
+  Function Name: noiseFilter
+  
+  Author: Katie MacMillan
+  
+  Description: noiseFilter evaluates a the neighborhood of
+        pixels around a target pixel, not including the target
+        pixel, and compares the target pixel to the average of
+        its neighbors. If the difference between the target
+        pixel and the average of its neighbors exceeds a user
+        defined threshold then the target pixel is set to the
+        average of its neighbors, otherwise it is left as its
+        original value.
+  
+  Params: img - the image to be processed
+            n - the pixel-average difference threshold
+  
+  Returns: the new filtered image
+--]]
+local function noiseFilter( img, n )
+
+  img = color.RGB2YIQ(img)
+  local cpy = img:clone()
+  local rows, cols = img.height, img.width
+
+  for r = 0, rows - 1 do
+    for c = 0, cols - 1 do
+      local curPixel = img:at(r,c).y
+      local sum = 0
+      local neighborhood = edge.getNeighborhood(img, r, c)
+      sum = neighborhood[1][1] + neighborhood[1][2] + neighborhood[1][3] + 
+            neighborhood[2][1] + neighborhood[2][3] +
+            neighborhood[3][1] + neighborhood[3][2] + neighborhood[3][3]
+            
+      local avg = math.floor((sum/8)+0.5)
+      local min = avg - n
+      local max = avg + n
+      if (curPixel > max or curPixel < min) then
+        cpy:at(r,c).y = avg
+      end
+      
+    end
+  end
+
+  return color.YIQ2RGB(cpy)
+
+end
+
 return {
   minFilter = minFilter,
   maxFilter = maxFilter,
@@ -244,4 +294,5 @@ return {
   rangeFilter = rangeFilter,
   medianFilter = medianFilter,
   medianPlus = medianPlusFilter,
+  noiseFilter = noiseFilter,
 }
