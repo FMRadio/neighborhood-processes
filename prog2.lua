@@ -118,6 +118,7 @@ imageMenu("Weiss's Processes",
     {"Noise Clean", il.noiseClean, 
       {{name = "threshold", type = "number", displaytype = "slider", default = 64, min = 0, max = 256}}},    
     {"Emboss", il.emboss},
+    {"Laplacian", il.laplacian},
   }
 )
 

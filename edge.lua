@@ -426,7 +426,7 @@ end
   
   Author: Forrest Miller
   
-  Description: 
+  Description: The laplacian function 
   
   Params: img - the image to be processed
   
@@ -435,14 +435,33 @@ end
 local function laplacian(img)
   local rows, cols = img.height, img.width
   local offset = 128
+  local filter = {{0, -1, 0},
+                  {-1, 4, -1},
+                  {0, -1, 0}}
   
-  img = color.RGB2YIQ(img)
   local cpy = img:clone()
+  img = color.RGB2YIQ(img)
   
   for r = 0, rows - 1 do
     for c = 0, cols - 1 do
-      --do the laplacian with an offset of 128
-      --clip
+      local sum = 0
+      local neighborhood = getNeighborhood(img, r, c)
+      
+      for i = 1, 3 do
+        for j = 1, 3 do
+          -- perform laplacian with offset
+          sum = sum + (neighborhood[i][j] * filter[i][j]);
+        end
+      end
+      
+      sum = sum + offset
+      
+      if sum < 0 then sum = 0
+      elseif sum > 255 then sum = 255 end
+      
+      cpy:at(r, c).r = sum
+      cpy:at(r, c).g = sum
+      cpy:at(r, c).b = sum
     end
   end
   
