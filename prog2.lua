@@ -97,6 +97,7 @@ imageMenu("Edge detection",
       --{"Variance", stat.variance, {{name = "w", type = "number", displaytype = "spin", default = 3, min = 0, max = 65}}},
     {"Standard Deviation", edge.deviationFilter, 
       {{name = "N", type = "number", displaytype = "spin", default = 3, min = 0, max = 65}}},
+    {"Laplacian", edge.laplacian},
   }
 )
 

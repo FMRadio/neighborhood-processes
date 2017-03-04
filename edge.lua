@@ -421,6 +421,33 @@ local function rangeFilter( img, n )
   return cpy
 end
 
+--[[
+  Function Name: laplacian
+  
+  Author: Forrest Miller
+  
+  Description: 
+  
+  Params: img - the image to be processed
+  
+  Returns: the new image
+--]]
+local function laplacian(img)
+  local rows, cols = img.height, img.width
+  local offset = 128
+  
+  img = color.RGB2YIQ(img)
+  local cpy = img:clone()
+  
+  for r = 0, rows - 1 do
+    for c = 0, cols - 1 do
+      --do the laplacian with an offset of 128
+      --clip
+    end
+  end
+  
+  return color.YIQ2RGB(cpy)
+end
 
 return {
   magnitudeSobel = magnitudeSobel,
@@ -430,4 +457,5 @@ return {
   deviationFilter = deviationFilter,
   rangeFilter = rangeFilter,
   getNeighborhood = getNeighborhood,
+  laplacian = laplacian,
 }

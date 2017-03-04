@@ -57,7 +57,8 @@ end
   
   Author: Forrest Miller
   
-  Description: 
+  Description: The smooth function does a 3x3 smoothing to the image, clipping
+  at 0 and 255. Then the smoothed image is returned.
   
   Params: img - the image to be processed
   
@@ -99,7 +100,8 @@ end
   
   Author: Forrest Miller
   
-  Description: 
+  Description: The sharpen function uses a 3x3 sharpening mask to determine a
+  new intensity for each pixel
   
   Params: img - the image to be processed
   
@@ -123,7 +125,7 @@ local function sharpen( img )
           sum = sum + multiplier*img:at(r+(i-1), c+(j-1)).y
         end
       end
-      -- am i supposed to rescale differently...?
+      
       if sum > 255 then sum = 255 end
       if sum < 0 then sum = 0 end
 
@@ -134,6 +136,19 @@ local function sharpen( img )
   return color.YIQ2RGB(res)
 end
 
+--[[
+  Function Name: emboss
+  
+  Author: Forrest Miller and Katie MacMillan
+  
+  Description: The emboss function uses a 3x3 filter to do an emboss effect on
+  the image. This also acts like a sort of edge detector. When done it returns
+  the new image.
+  
+  Params: img - the image to be processed
+  
+  Returns: the embossed image
+--]]
 local function emboss( img )
   local nrows, ncols = img.height, img.width
   local filter = {{0, 0, 0},
@@ -147,15 +162,17 @@ local function emboss( img )
     for c = 1, ncols - 2 do
       local sum = 0
       local neighborhood = edge.getNeighborhood(img, r, c)
+      
       for i = 1, 3 do
         for j = 1, 3 do
           sum = sum + (neighborhood[i][j] * filter[i][j])
         end
       end
+    
       sum = sum + 128
+      
       if sum < 0 then sum = 0
       elseif sum > 255 then sum = 255 end
-      
       
       res:at(r, c).y = sum
     end

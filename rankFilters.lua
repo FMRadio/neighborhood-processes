@@ -196,7 +196,7 @@ end
   
   Author: Forrest Miller
   
-  Description: medianPlusFilter evaluates a the neighborhood
+  Description: medianPlusFilter evaluates the neighborhood
         of pixels immediatly above, below and to either side 
         of a target pixel and sets the target pixel to the 
         median value of all of the pixels in the neighborhood
