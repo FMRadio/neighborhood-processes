@@ -152,8 +152,8 @@ end
 local function emboss( img )
   local nrows, ncols = img.height, img.width
   local filter = {{0, 0, 0},
-                  {0, 1, 0},
-                  {0, 0, -1}}
+                  {0, 2, 0},
+                  {0, 0, -2}}
 
   img = color.RGB2YIQ(img)
   local res = img:clone()
@@ -168,7 +168,6 @@ local function emboss( img )
           sum = sum + (neighborhood[i][j] * filter[i][j])
         end
       end
-    
       sum = sum + 128
       
       if sum < 0 then sum = 0

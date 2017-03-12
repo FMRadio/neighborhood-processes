@@ -465,7 +465,7 @@ local function laplacian(img)
     end
   end
   
-  return color.YIQ2RGB(cpy)
+  return cpy
 end
 
 return {
