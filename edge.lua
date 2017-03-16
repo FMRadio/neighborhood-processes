@@ -426,7 +426,8 @@ end
   
   Author: Forrest Miller
   
-  Description: The laplacian function 
+  Description: The laplacian function uses the filter shown to calculate a sum.
+  We then add the offset and clip before assigning the value to the r, g and b.
   
   Params: img - the image to be processed
   
