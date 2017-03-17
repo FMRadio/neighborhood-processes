@@ -1,3 +1,8 @@
+--[[
+  * * * * rankFilters.lua * * * *
+This file contains all the rank order and noise cleaning filters.
+--]]
+
 local color = require "il.color"
 local edge = require "edge"
 
@@ -93,7 +98,6 @@ local function minFilter( img, n )
   end
 
   return color.YIQ2RGB(cpy)
-
 end
 
 --[[
@@ -141,7 +145,6 @@ local function maxFilter( img, n )
   end
 
   return color.YIQ2RGB(cpy)
-
 end
 
 --[[
@@ -224,14 +227,14 @@ local function medianPlusFilter( img )
       local sum = 0
 
       for i = 0, 2 do
-        for j = 0, 2 do          
+        for j = 0, 2 do
           if filter[(i*3) + j + 1] == 1 then
             table.insert(pixels, 1, img:at(r+(i-1), c+(j-1)).y)
           end
         end
       end
 
-      pixels = sort(pixels)
+      pixels = sort(pixels, 1, table.getn(pixels))
       local mid = math.floor((table.getn(pixels)/2)+0.5)
 
       if mid == 0 then
@@ -290,7 +293,6 @@ local function noiseFilter( img, n )
   end
 
   return color.YIQ2RGB(cpy)
-
 end
 
 return {

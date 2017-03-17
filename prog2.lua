@@ -1,10 +1,11 @@
 --[[
   * * * * prog2.lua * * * *
-Digital Image Process Program #2: This program does a multitude of neighborhood processes to a given image. 
+Digital Image Process Program #2: This program does a multitude of neighborhood
+processes to a given image. This file is the main program which creates the menus.
 
 Authors: Forrest Miller and Katie MacMillan
 Class: CSC442/542 Digital Image Processing
-Date: 3/14/2017
+Date: 3/16/2017
 --]]
 
 -- LuaIP image processing routines
@@ -42,10 +43,10 @@ imageMenu("Histogram Processes",
   {
     {"Display Histogram", il.showHistogram,
       {{name = "Color Mode", type = "string", default = "rgb"}}},
-     {"Contrast Stretch", histo.stretchSpecify, hotkey = "C-H",
+    {"Contrast Stretch", histo.stretchSpecify, hotkey = "C-H",
       {{name = "lp", type = "number", displaytype = "spin", default = 1, min = 0, max = 100},
        {name = "rp", type = "number", displaytype = "spin", default = 99, min = 0, max = 100}}},
-     {"Histogram Equalize", il.equalize,
+    {"Histogram Equalize", il.equalize,
       {{name = "color model", type = "string", default = "yiq"}}},
   })
 
@@ -78,9 +79,6 @@ imageMenu("Convolution filters",
     {"Mean", convolution.meanFilter, 
       {{name = "N", type = "number", displaytype = "spin", default = 3, min = 0, max = 255}}},
     {"Emboss", convolution.emboss},
-    --{"Weighted Mean 1", smooth.meanW1, {{name = "w", type = "number", displaytype = "spin", default = 3, min = 0, max = 65}}},
-    --{"Weighted Mean 2", smooth.meanW2, {{name = "w", type = "number", displaytype = "spin", default = 3, min = 0, max = 65}}},
-    --{"Gaussian", smooth.meanW3, hotkey = "C-G", {{name = "sigma", type = "string", default = "2.0"}}},
   }
 )
 
@@ -91,34 +89,11 @@ imageMenu("Edge detection",
     {"Sobel Edge Dir", edge.directionSobel},
     {"Kirsch Edge Mag", edge.magnitudeKirsch},
     {"Kirsch Edge Dir", edge.directionKirsch},
-    --{"Morph Gradient", edge.morphGradient},
     {"Range", edge.rangeFilter,
     {{name = "N", type = "number", displaytype = "spin", default = 3, min = 0, max = 65}}},
-      --{"Variance", stat.variance, {{name = "w", type = "number", displaytype = "spin", default = 3, min = 0, max = 65}}},
     {"Standard Deviation", edge.deviationFilter, 
       {{name = "N", type = "number", displaytype = "spin", default = 3, min = 0, max = 65}}},
     {"Laplacian", edge.laplacian},
-  }
-)
-
--- Weiss Processes for testing purposes
-imageMenu("Weiss's Processes",
-  {
-    {"Minimum", minmax.minimum},
-    {"Maximum", minmax.maximum},
-    {"Range", edge2.range},
-    {"Median+", median.medianPlus},
-    {"Median", utils.timed(median.median), {{name = "w", type = "number", displaytype = "spin", default = 3, min = 0, max = 65}}},
-    {"Sobel Edge Mag", edge2.sobelMag},
-    {"Sobel Edge Dir", il.sobel},
-    {"Kirsch Edge Mag/Dir", il.kirsch},
-
-    {"Mean", smooth.mean, {{name = "w", type = "number", displaytype = "spin", default = 3, min = 0, max = 65}}},
-    {"Std Dev", stat.stdDev, {{name = "w", type = "number", displaytype = "spin", default = 3, min = 0, max = 65}}},
-    {"Noise Clean", il.noiseClean, 
-      {{name = "threshold", type = "number", displaytype = "slider", default = 64, min = 0, max = 256}}},    
-    {"Emboss", il.emboss},
-    {"Laplacian", il.laplacian},
   }
 )
 
@@ -126,7 +101,7 @@ imageMenu("Weiss's Processes",
 imageMenu("Help",
   {
     {"Help", viz.imageMessage("Help", "Under the File menu a user can open a new image, save the current image or exit the program.\n\nBy right clicking on the image tab, the user can duplicate or reload the image. The user may also press Ctrl+D to duplicate an image or Crtl+R to reload it.\n\nThere are multiple menus from which to choose. You are able to do some preprocessing with a few point processes. Then edge detectors and other neighborhood processes which have been implemented may be run.\n\nThe user can also add noise to better show the effect of the noise cleaning filters.")},
-    {"About", viz.imageMessage("Lua Image Neighborhood Processing" .. viz.VERSION, "Authors: Forrest Miller and Katie MacMillan\nClass: CSC442 Digital Image Processing\nDate: March 14th, 2017")},
+    {"About", viz.imageMessage("Lua Image Neighborhood Processing" .. viz.VERSION, "Authors: Forrest Miller and Katie MacMillan\nClass: CSC442 Digital Image Processing\nDate: March 16th, 2017")},
   }
 )
 

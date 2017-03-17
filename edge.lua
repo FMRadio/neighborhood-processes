@@ -1,3 +1,10 @@
+--[[
+  * * * * edge.lua * * * *
+  
+This file contains the getNeighborhood helper function as well as the edge
+detection processes.
+--]]
+
 local color = require "il.color"
 
 --[[
@@ -217,9 +224,6 @@ local function directionSobel( img )
   return cpy
 end
 
-
-
-
 --[[
   Function Name: rotateKirsch
   
@@ -262,7 +266,6 @@ local function kirsch (neighborhood, filter)
   end
   
   return mag
-
 end
 
 --[[
@@ -449,9 +452,7 @@ local function deviationFilter( img, n )
   end
 
   return color.YIQ2RGB(cpy)
-
 end
-
 
 --[[
   Function Name: rangeFilter

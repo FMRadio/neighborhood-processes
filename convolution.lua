@@ -1,5 +1,11 @@
+--[[
+  * * * * convolution.lua * * * *
+This file contains the convolution filters: mean, smooth, sharpen and emboss.
+--]]
+
 local color = require "il.color"
 local edge = require "edge"
+
 --[[
   Function Name: meanFilter
   
@@ -49,7 +55,6 @@ local function meanFilter( img, n )
   end
 
   return color.YIQ2RGB(cpy)
-
 end
 
 --[[
