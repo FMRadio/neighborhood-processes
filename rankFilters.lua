@@ -13,32 +13,38 @@ local edge = require "edge"
   
   Returns: a sorted list of the original intensity values
 --]]
-local function sort(intensities)
-  sorted = {}
-  for i = 1, table.getn(intensities) do
-    if table.getn(sorted) == 0 then
-      table.insert(sorted, 1, intensities[i])
-    else
-      local j = 1
-      -- walk through sorted
-      local count = table.getn(sorted)
-      local insertI = intensities[i]
-      local compI = sorted[j]
+local function sort(intensities, left, right)
+  local i = left
+  local j = right
+  local tmp
+  local pivot = intensities[math.floor((left + right) / 2)]
 
-      while (j <= count) and ((compI == insertI) or (compI > insertI)) do
-        -- move j forwared until we find the end of sorted or an element larger than intensity
-        j = j+1
-        compI = sorted[j]
-      end
-      --if j < count then
-      --  j = j+1
-      --end
+  while i <= j do
+    while intensities[i] < pivot do
+      i = i + 1
+    end
 
-      -- insert intensity into the position of the larger intensity
-      table.insert(sorted, j, insertI)
+    while intensities[j] > pivot do
+      j = j - 1
+    end
+
+    if i <= j then
+      tmp = intensities[i]
+      intensities[i] = intensities[j]
+      intensities[j] = tmp
+      i = i + 1
+      j = j - 1
     end
   end
-  return sorted
+
+  if left < j then
+    intensities = sort(intensities, left, j)
+  end
+  if i < right then
+    intensities = sort(intensities, i, right)
+  end
+ 
+  return intensities
 end
 
 --[[
@@ -177,13 +183,12 @@ local function medianFilter( img, n )
           end
         end
       end
-      pixels = sort(pixels)
+      pixels = sort(pixels, 1, table.getn(pixels))
       local mid = math.floor((table.getn(pixels)/2)+0.5)
       if mid == 0 then
         mid = 1
       end
 
-      print(mid)
       cpy:at(r,c).y = pixels[mid]
     end
   end
@@ -227,7 +232,7 @@ local function medianPlusFilter( img )
 
       pixels = sort(pixels)
       local mid = math.floor((table.getn(pixels)/2)+0.5)
-      
+
       if mid == 0 then
         mid = 1
       end
@@ -270,16 +275,16 @@ local function noiseFilter( img, n )
       local sum = 0
       local neighborhood = edge.getNeighborhood(img, r, c)
       sum = neighborhood[1][1] + neighborhood[1][2] + neighborhood[1][3] + 
-            neighborhood[2][1] + neighborhood[2][3] +
-            neighborhood[3][1] + neighborhood[3][2] + neighborhood[3][3]
-            
+      neighborhood[2][1] + neighborhood[2][3] +
+      neighborhood[3][1] + neighborhood[3][2] + neighborhood[3][3]
+
       local avg = math.floor((sum/8)+0.5)
       local min = avg - n
       local max = avg + n
       if (curPixel > max or curPixel < min) then
         cpy:at(r,c).y = avg
       end
-      
+
     end
   end
 
