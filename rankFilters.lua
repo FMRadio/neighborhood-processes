@@ -7,8 +7,9 @@ local edge = require "edge"
   Author: Katie MacMillan
   
   Description:  sort takes in a list of intensity
-                values and sorts them in decending
-                order
+            values and sorts them in decending
+            order using a recursive quick sort.
+            
   Params: intensities - a list of intensity values
   
   Returns: a sorted list of the original intensity values
