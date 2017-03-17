@@ -1,5 +1,21 @@
 local color = require "il.color"
 
+--[[
+  Function Name: getNeighborhood
+  
+  Description:  getNeighborhood retrieves a 3x3 neighborhood
+                of pixels based around an input row and
+                column target pixel. If the target pixels is
+                on an edge, the other side is reflected into
+                the neighborhood as the missing edge.
+  
+  Params:  img - the image to extract the neighborhood from
+             r - the current row of the target pixel
+             c - the current column of the target pixel
+  
+  Returns:  a 2D table containing the 3x3 neighborhood of pixels
+            surrounding the and including the target pixel.
+--]]
 local function getNeighborhood (img, r, c )
   local rows, cols = img.height, img.width
   -- check for neighborhood row bounds
@@ -41,7 +57,6 @@ local function getNeighborhood (img, r, c )
       return {{img:at(r+1,c-1).y, img:at(r+1,c).y, img:at(r+1,c-1).y},
               {img:at(r,c-1).y,   img:at(r,c).y,   img:at(r,c-1).y},
               {img:at(r+1,c-1).y, img:at(r+1,c).y, img:at(r+1,c-1).y}}
-
     end
   else
     -- no row r+1, reflect row r-1
@@ -205,12 +220,38 @@ end
 
 
 
+--[[
+  Function Name: rotateKirsch
+  
+  Author: Katie MacMillan
+  
+  Description: rotateKirsch rotates the positions of an input
+          3x3 filter counterclockwise by one position.
+  
+  Params: filter - the 3x3 filter to be rotated
+  
+  Returns: the newly rotated filter
+--]]
 local function rotateKirsch (filter)  
   return {{filter[1][2], filter[1][3], filter[2][3]},
     {filter[1][1], filter[2][2], filter[3][3]},
     {filter[2][1], filter[3][1], filter[3][2]}}
 end
 
+--[[
+  Function Name: kirsch
+  
+  Author: Katie MacMillan
+  
+  Description: kirsch calculates the sum of a 
+          neighborhood masked with a kirsch filter
+          and returns the sum.
+  
+  Params: neighborhood - the 3x3 neighborhood of image pixels
+          filter - the 3x3 filter to be rotated
+  
+  Returns: the sum of the neighborhood of pixels with the filter applied
+--]]
 local function kirsch (neighborhood, filter)
   local mag = 0
   
@@ -224,6 +265,24 @@ local function kirsch (neighborhood, filter)
 
 end
 
+--[[
+  Function Name: magnitudeKirsch
+  
+  Author: Katie MacMillan
+  
+  Description: magnitudeKirsch starts with a kirsch filter
+            and for each target pixel the greatest kirsch
+            reaction is stored and then divided by 3. These
+            values are clipped to 255 if the value is greater
+            than 255 and to 0 if the value is lower than 0.
+            The final value is stored in each color channel
+            of the corresponding position in a secondary 
+            image, creating a grayscale image.
+  
+  Params: img - the imge to be filtered
+  
+  Returns: the newly created and modified image
+--]]
 local function magnitudeKirsch( img )
   local cpy = img:clone()
   local rows, cols = img.height, img.width
@@ -258,6 +317,34 @@ local function magnitudeKirsch( img )
   return cpy
 end
 
+--[[
+  Function Name: directionKirsch
+  
+  Author: Katie MacMillan
+  
+  Description: directionKirsch starts with a kirsch filter
+            and for each target pixel the greatest kirsch
+            reaction is, and the rotation iteration are stored.
+            The rotation iteration number indicates the multiple
+            of 45 degrees from 0 for the direction of the 
+            intensity change.
+            
+            The iteration is multiplied by 45
+            and then 22.5 is subtracted to account for the +-22.5
+            degrees.The degree direction is then multiplied by
+            the number of pixel intensities divided by the total
+            number of degrees (360) to get the final intensity. 
+            This value is clipped to 255 if the value is greater
+            than 255 and to 0 if the value is lower than 0.
+            
+            The final value is stored in each color channel
+            of the corresponding position in a secondary 
+            image, creating a grayscale image.
+  
+  Params: img - the imge to be filtered
+  
+  Returns: the newly created and modified image
+--]]
 local function directionKirsch( img )
   local cpy = img:clone()
   img = color.RGB2YIQ( img )
